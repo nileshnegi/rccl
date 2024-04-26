@@ -1,0 +1,4 @@
+[submodule "mscclpp"]
+	path = libs/mscclpp
+	url = https://github.com/nileshnegi/mscclpp.git
+	branch = feature/rccl_mscclpp
