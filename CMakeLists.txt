@@ -17,6 +17,7 @@ option(BUILD_SHARED_LIBS                       "Build as shared library"        
 option(BUILD_TESTS                             "Build unit test programs"                      OFF)
 option(COLLTRACE                               "Collective Trace Option"                       ON)
 option(ENABLE_MSCCL_KERNEL                     "Enable MSCCL while compiling"                  ON)
+option(ENABLE_MSCCLPP                          "Enable MSCCLPP"                                OFF)
 option(ENABLE_IFC                              "Enable indirect function call"                 OFF)
 option(INSTALL_DEPENDENCIES                    "Force install dependencies"                    OFF)
 option(ROCTX                                   "Enable ROCTX"                                  OFF)
@@ -458,7 +459,11 @@ if (ENABLE_MSCCL_KERNEL)
   )
   list(APPEND SRC_FILES ${MSCCL_KERNEL_SOURCES})
 endif()
-  
+
+if (ENABLE_MSCCLPP)
+  add_subdirectory(libs/mscclpp)
+endif()
+
 # Hipify source files (copy of source generated into hipify directory)
 #==================================================================================================
 find_program(hipify-perl_executable hipify-perl)
