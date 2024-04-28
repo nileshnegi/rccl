@@ -460,10 +460,6 @@ if (ENABLE_MSCCL_KERNEL)
   list(APPEND SRC_FILES ${MSCCL_KERNEL_SOURCES})
 endif()
 
-if (ENABLE_MSCCLPP)
-  add_subdirectory(libs/mscclpp)
-endif()
-
 # Hipify source files (copy of source generated into hipify directory)
 #==================================================================================================
 find_program(hipify-perl_executable hipify-perl)
@@ -658,6 +654,14 @@ else()
 endif()
 if (HAVE_KERNARG_PRELOAD)
   target_link_options(rccl PRIVATE -Xoffload-linker -mllvm=-amdgpu-kernarg-preload-count=16)
+endif()
+
+if(ENABLE_MSCCLPP)
+  message(STATUS "Building MSCCLPP")
+  include(cmake/MSCCLPP.cmake)
+  message(STATUS "Building RCCL with MSCCLPP")
+  target_include_directories(rccl PRIVATE ${MSCCLPP_INCLUDE_DIRS})
+  target_link_libraries(rccl PRIVATE ${MSCCLPP_BOTH_LIBRARIES})
 endif()
 
 ## Track linking time
