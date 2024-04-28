@@ -180,6 +180,7 @@ void NCCL_NO_OPTIMIZE commPoison(ncclComm_t comm) {
 }
 
 RCCL_PARAM(KernelCollTraceEnable, "KERNEL_COLL_TRACE_ENABLE", 0);
+RCCL_PARAM(EnableMscclpp, "ENABLE_MSCCLPP", 0);
 
 #ifdef ENABLE_COLLTRACE
 // Should be in sync with 'ALL_COLLS' in Generator.cmake
