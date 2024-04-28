@@ -470,18 +470,44 @@ ncclResult_t mscclEnqueueCheck(
     count, dataType, root, peer, op, func, comm, stream,
     &threadLocalStatus.savedSchedulerParams.back()));
 
+  printf("In msccl enqueue check\n");
+  NCCLCHECK(mscclGetCaptureStatus(stream));
+  size_t nBytes = count * ncclTypeSize(dataType);
+
   switch (threadLocalStatus.groupStatus) {
     case mscclNoGroup:
+      if (comm->mscclppCompatible) {
+          /* check if one rank per GPU and graph mode is enabled */
+          printf("I am here %zu captureId = %d\n", nBytes, threadLocalStatus.captureId);
+	  if ((nBytes <= 1024*1024) && (threadLocalStatus.captureStatus != mscclNoCapture) && comm->mscclCompatible) {
+                // call mscclppAllreduce()
+		// MSCCLPP_NCCL_API mscclpp_ncclResult_t mscclpp_ncclAllReduce(const void* sendbuff, void* recvbuff, size_t count, mscclpp_ncclDataType_t datatype,
+		//                                     mscclpp_ncclRedOp_t, mscclpp_ncclComm_t comm, cudaStream_t stream)
+		printf("Detected graph mode\n");
+		break;
+	   }
+      }
       if (comm->mscclCompatible) {
           NCCLCHECK(mscclSchedulerSelectAlgo(&threadLocalStatus.savedSchedulerParams.back()));
           if (threadLocalStatus.savedSchedulerParams.back().p.scheduled) {
             NCCLCHECK(mscclRunSavedParams());
             break;
           }
-        }
+      }
       NCCLCHECK(mscclFallBackSavedParams());
       break;
     case mscclGroupSupportedOp:
+      if (comm->mscclppCompatible) {
+          /* check if one rank per GPU and graph mode is enabled */
+          printf("Here I am %zu captureId = %d\n", nBytes, threadLocalStatus.captureId);
+          if ((nBytes <= 1024*1024) && (threadLocalStatus.captureStatus != mscclNoCapture) && comm->mscclCompatible) {
+                // call mscclppAllreduce()
+		// MSCCLPP_NCCL_API mscclpp_ncclResult_t mscclpp_ncclAllReduce(const void* sendbuff, void* recvbuff, size_t count, mscclpp_ncclDataType_t datatype,
+		//                                     mscclpp_ncclRedOp_t, mscclpp_ncclComm_t comm, cudaStream_t stream)
+                printf("Detected graph mode\n");
+                break;
+           }
+      }
       if (comm->mscclCompatible) {
           NCCLCHECK(mscclSchedulerSelectAlgo(&threadLocalStatus.savedSchedulerParams.back()));
           if (threadLocalStatus.savedSchedulerParams.back().p.scheduled) {
