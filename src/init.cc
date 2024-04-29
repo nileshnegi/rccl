@@ -7,6 +7,7 @@
  ************************************************************************/
 
 #include "nccl.h"
+#include "include/mscclpp_nccl.h"
 #include "channel.h"
 #include "nvmlwrap.h"
 #include "gdrwrap.h"

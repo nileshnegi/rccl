@@ -366,6 +366,10 @@ else
 fi
 check_exit_code "$?"
 
+if ($mscclpp_enabled); then
+    sed -i '9d' "./mscclpp/include/mscclpp/gpu.hpp"
+fi
+
 if ($install_library); then
     VERBOSE=${build_verbose} $build_system -j $num_parallel_jobs install
 else

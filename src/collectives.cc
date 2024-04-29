@@ -9,6 +9,7 @@
 #include "enqueue.h"
 #include "graph/topo.h"
 #include "nccl.h"
+#include "include/mscclpp_nccl.h"
 
 #include "msccl/msccl_lifecycle.h"
 
@@ -39,6 +40,10 @@ NCCL_API(ncclResult_t, ncclAllReduce, const void* sendbuff, void* recvbuff, size
     ncclDataType_t datatype, ncclRedOp_t op, ncclComm* comm, cudaStream_t stream);
 ncclResult_t ncclAllReduce(const void* sendbuff, void* recvbuff, size_t count,
     ncclDataType_t datatype, ncclRedOp_t op, ncclComm* comm, cudaStream_t stream) {
+      if (comm->mscclCompatible)
+      {
+        return (ncclResult_t)mscclpp_ncclAllReduce(sendbuff, recvbuff, count, (mscclpp_ncclDataType_t)datatype, (mscclpp_ncclRedOp_t)op, comm->mscclpp_comm, stream);
+      }
   struct NvtxParamsAllReduce {
     size_t bytes;
     ncclRedOp_t op;

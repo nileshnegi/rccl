@@ -17,6 +17,8 @@
 #include "nccl_net.h"
 #include "register.h"
 
+#include "include/mscclpp_nccl.h"
+
 #if defined(__HIP_PLATFORM_AMD__) || defined(__HCC__) || defined(__HIPCC__)
 #define HIPRT_CB
 #else
@@ -391,6 +393,7 @@ struct ncclComm {
 
   // Whether this comm is compatible with MSCCLPP
   bool mscclppCompatible;
+  mscclpp_ncclComm_t mscclpp_comm;
   // Whether this comm is compatible with MSCCL
   bool mscclCompatible;
   // group job to support multi-thread FT
