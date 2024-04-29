@@ -2174,6 +2174,13 @@ ncclResult_t ncclCommInitRank(ncclComm_t* newcomm, int nranks, ncclUniqueId comm
   NVTX3_FUNC_WITH_PARAMS(CommInitRank, CommInitRankSchema, payload)
 
   NCCLCHECK(ncclCommInitRankDev(newcomm, nranks, commId, myrank, cudaDev, &config));
+
+  (*newcomm)->mscclCompatible = rcclParamEnableMscclpp();
+  if ((*newcomm)->mscclCompatible)
+  {
+    NCCLCHECK((ncclResult_t)mscclpp_ncclCommInitRank(&((*newcomm)->mscclpp_comm), nranks, *reinterpret_cast<mscclpp_ncclUniqueId*>(&commId), myrank));
+  }
+
   return ncclSuccess;
 }
 
