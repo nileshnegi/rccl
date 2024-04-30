@@ -40,7 +40,7 @@ NCCL_API(ncclResult_t, ncclAllReduce, const void* sendbuff, void* recvbuff, size
     ncclDataType_t datatype, ncclRedOp_t op, ncclComm* comm, cudaStream_t stream);
 ncclResult_t ncclAllReduce(const void* sendbuff, void* recvbuff, size_t count,
     ncclDataType_t datatype, ncclRedOp_t op, ncclComm* comm, cudaStream_t stream) {
-      if (comm->mscclCompatible)
+      if (comm->mscclppCompatible)
       {
         return (ncclResult_t)mscclpp_ncclAllReduce(sendbuff, recvbuff, count, (mscclpp_ncclDataType_t)datatype, (mscclpp_ncclRedOp_t)op, comm->mscclpp_comm, stream);
       }
