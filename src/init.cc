@@ -2183,7 +2183,7 @@ ncclResult_t ncclCommInitRank(ncclComm_t* newcomm, int nranks, ncclUniqueId comm
   (*newcomm)->mscclppCompatible = rcclParamEnableMscclpp();
   if ((*newcomm)->mscclppCompatible)
   {
-    NCCLCHECK((ncclResult_t)mscclpp_ncclCommInitRank(&((*newcomm)->mscclpp_comm), nranks, *reinterpret_cast<mscclpp_ncclUniqueId*>(&commId), myrank));
+    NCCLCHECK((ncclResult_t)mscclpp_ncclCommInitRank(&((*newcomm)->mscclpp_comm), nranks, *reinterpret_cast<mscclpp_ncclUniqueId*>(&(commId.mscclpp)), myrank));
   }
 
   return ncclSuccess;
