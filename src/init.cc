@@ -158,13 +158,19 @@ ncclResult_t ncclGetVersion(int* version) {
   return ncclSuccess;
 }
 
+RCCL_PARAM(EnableMscclpp, "ENABLE_MSCCLPP", 0);
+
 NCCL_API(ncclResult_t, ncclGetUniqueId, ncclUniqueId* out);
 ncclResult_t ncclGetUniqueId(ncclUniqueId* out) {
   NCCLCHECK(ncclInit());
   NCCLCHECK(PtrCheck(out, "GetUniqueId", "out"));
-  //make mscclpp calls from here...
   ncclResult_t res = bootstrapGetUniqueId((struct ncclBootstrapHandle*)out);
   TRACE_CALL("ncclGetUniqueId(0x%llx)", (unsigned long long)hashUniqueId(*out));
+  if (rcclParamEnableMscclpp())
+  {
+    NCCLCHECK(res);
+    res = (ncclResult_t)mscclpp_ncclGetUniqueId(reinterpret_cast<mscclpp_ncclUniqueId*>(&(out->mscclpp)));
+  }
   return res;
 }
 
@@ -181,7 +187,6 @@ void NCCL_NO_OPTIMIZE commPoison(ncclComm_t comm) {
 }
 
 RCCL_PARAM(KernelCollTraceEnable, "KERNEL_COLL_TRACE_ENABLE", 0);
-RCCL_PARAM(EnableMscclpp, "ENABLE_MSCCLPP", 0);
 
 #ifdef ENABLE_COLLTRACE
 // Should be in sync with 'ALL_COLLS' in Generator.cmake
