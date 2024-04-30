@@ -2175,8 +2175,8 @@ ncclResult_t ncclCommInitRank(ncclComm_t* newcomm, int nranks, ncclUniqueId comm
 
   NCCLCHECK(ncclCommInitRankDev(newcomm, nranks, commId, myrank, cudaDev, &config));
 
-  (*newcomm)->mscclCompatible = rcclParamEnableMscclpp();
-  if ((*newcomm)->mscclCompatible)
+  (*newcomm)->mscclppCompatible = rcclParamEnableMscclpp();
+  if ((*newcomm)->mscclppCompatible)
   {
     NCCLCHECK((ncclResult_t)mscclpp_ncclCommInitRank(&((*newcomm)->mscclpp_comm), nranks, *reinterpret_cast<mscclpp_ncclUniqueId*>(&commId), myrank));
   }
