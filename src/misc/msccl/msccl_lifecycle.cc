@@ -481,7 +481,7 @@ ncclResult_t mscclEnqueueCheck(
       if (comm->mscclppCompatible) {
         /* check if one rank per GPU and graph mode is enabled */
         //printf("I am here %zu captureId = %d\n", nBytes, threadLocalStatus.captureId);
-        if ((nBytes <= 1024*1024) && (threadLocalStatus.captureStatus != mscclNoCapture) && comm->mscclCompatible) {
+        if ((nBytes <= comm->mscclpp_threshold) && (threadLocalStatus.captureStatus != mscclNoCapture) && comm->mscclCompatible) {
                     // call mscclppAllreduce()
           // MSCCLPP_NCCL_API mscclpp_ncclResult_t mscclpp_ncclAllReduce(const void* sendbuff, void* recvbuff, size_t count, mscclpp_ncclDataType_t datatype,
           //                                     mscclpp_ncclRedOp_t, mscclpp_ncclComm_t comm, cudaStream_t stream)
@@ -510,18 +510,19 @@ ncclResult_t mscclEnqueueCheck(
     case mscclGroupSupportedOp:
       if (comm->mscclppCompatible) {
         /* check if one rank per GPU and graph mode is enabled */
-        printf("Here I am %zu captureId = %d\n", nBytes, threadLocalStatus.captureId);
-        if ((nBytes <= 1024*1024) && (threadLocalStatus.captureStatus != mscclNoCapture) && comm->mscclCompatible) {
+        if ((nBytes <= comm->mscclpp_threshold) && (threadLocalStatus.captureStatus != mscclNoCapture) && comm->mscclCompatible) {
                 // call mscclppAllreduce()
           // MSCCLPP_NCCL_API mscclpp_ncclResult_t mscclpp_ncclAllReduce(const void* sendbuff, void* recvbuff, size_t count, mscclpp_ncclDataType_t datatype,
           //                                     mscclpp_ncclRedOp_t, mscclpp_ncclComm_t comm, cudaStream_t stream)
           //printf("Detected graph mode\n");
           if (func == mscclFuncAllReduce) {
             NCCLCHECK((ncclResult_t)mscclpp_ncclAllReduce(sendBuff, recvBuff, count, (mscclpp_ncclDataType_t)dataType, (mscclpp_ncclRedOp_t)op, comm->mscclpp_comm, stream));
+            threadLocalStatus.savedSchedulerParams.clear();
             break;
           }
           else if (func == mscclFuncAllGather) {
             NCCLCHECK((ncclResult_t)mscclpp_ncclAllGather(sendBuff, recvBuff, count, (mscclpp_ncclDataType_t)dataType, comm->mscclpp_comm, stream));
+            threadLocalStatus.savedSchedulerParams.clear();
             break;
           }
         }

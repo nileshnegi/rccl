@@ -159,6 +159,7 @@ ncclResult_t ncclGetVersion(int* version) {
 }
 
 RCCL_PARAM(EnableMscclpp, "ENABLE_MSCCLPP", 0);
+RCCL_PARAM(MscclppThreshold, "MSCCLPP_THRESHOLD", (size_t)(1024*1024));
 
 NCCL_API(ncclResult_t, ncclGetUniqueId, ncclUniqueId* out);
 ncclResult_t ncclGetUniqueId(ncclUniqueId* out) {
@@ -2183,6 +2184,7 @@ ncclResult_t ncclCommInitRank(ncclComm_t* newcomm, int nranks, ncclUniqueId comm
   (*newcomm)->mscclppCompatible = rcclParamEnableMscclpp();
   if ((*newcomm)->mscclppCompatible)
   {
+    (*newcomm)->mscclpp_threshold = rcclParamMscclppThreshold();
     NCCLCHECK((ncclResult_t)mscclpp_ncclCommInitRank(&((*newcomm)->mscclpp_comm), nranks, *reinterpret_cast<mscclpp_ncclUniqueId*>(&(commId.mscclpp)), myrank));
   }
 
