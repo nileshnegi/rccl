@@ -33,31 +33,32 @@
 include(cmake/DownloadProject.cmake)
 
 if(ENABLE_MSCCLPP)
-    find_package(MSCCLPP)
+    set(MSCCLPP_ROOT ${CMAKE_CURRENT_BINARY_DIR}/mscclpp CACHE PATH "")
+    find_package(mscclpp)
 
-    if(NOT MSCCLPP_FOUND)
+    if(NOT mscclpp_FOUND)
         message(STATUS "MSCCLPP not found. Downloading and building MSCCLPP.")
         # Download, build and install mscclpp
-        set(MSCCLPP_ROOT ${CMAKE_CURRENT_BINARY_DIR}/mscclpp CACHE PATH "")
     
         download_project(PROJ                mscclpp
                          GIT_REPOSITORY      https://github.com/nileshnegi/mscclpp.git
                          GIT_TAG             feature/rccl_mscclpp
                          INSTALL_DIR         ${MSCCLPP_ROOT}
-    		         CMAKE_ARGS          -DBUILD_APPS=ON -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+                         CMAKE_ARGS          -DBUILD_APPS_NCCL=ON -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
                          LOG_DOWNLOAD        TRUE
                          LOG_CONFIGURE       TRUE
                          LOG_BUILD           TRUE
                          LOG_INSTALL         TRUE
                          UPDATE_DISCONNECTED TRUE
         )
-	#add_subdirectory(${MSCCLPP_SOURCE_DIR} ${MSCCLPP_BINARY_DIR})
-	set(MSCCLPP_INCLUDE_DIRS ${MSCCLPP_ROOT}/include CACHE PATH "")
-	if(EXISTS ${MSCCLPP_ROOT}/lib)
-	    set(MSCCLPP_BOTH_LIBRARIES ${MSCCLPP_ROOT}/lib/libmscclpp.so;${MSCCLPP_ROOT}/lib/libmscclpp_nccl.so CACHE PATH "")
+
+        if(EXISTS ${MSCCLPP_ROOT}/lib)
         else()
             message(FATAL_ERROR "Cannot find mscclpp library installation path.")
-    	find_package(MSCCLPP REQUIRED CONFIG PATHS ${MSCCLPP_ROOT})
+            find_package(mscclpp REQUIRED CONFIG PATHS ${MSCCLPP_ROOT})
         endif()
     endif()
+
+	set(MSCCLPP_INCLUDE_DIRS ${MSCCLPP_ROOT}/include CACHE PATH "")
+    set(MSCCLPP_LIBRARIES ${MSCCLPP_ROOT}/lib/libmscclpp_static.a;${MSCCLPP_ROOT}/lib/libmscclpp_nccl_static.a CACHE PATH "")
 endif()

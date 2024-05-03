@@ -661,7 +661,7 @@ if(ENABLE_MSCCLPP)
   include(cmake/MSCCLPP.cmake)
   message(STATUS "Building RCCL with MSCCLPP")
   target_include_directories(rccl PRIVATE ${MSCCLPP_INCLUDE_DIRS})
-  target_link_libraries(rccl PRIVATE ${MSCCLPP_BOTH_LIBRARIES})
+  target_link_libraries(rccl PRIVATE ${MSCCLPP_LIBRARIES})
 endif()
 
 ## Track linking time

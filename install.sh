@@ -91,7 +91,7 @@ while true; do
     -d | --dependencies)             install_dependencies=true;                                                                        shift ;;
          --debug)                    build_release=false;                                                                              shift ;;
          --enable_backtrace)         build_bfd=true;                                                                                   shift ;;
-	 --enable-mscclpp)           mscclpp_enabled=true;                                                                             shift ;;
+	     --enable-mscclpp)           mscclpp_enabled=true;                                                                             shift ;;
          --disable-colltrace)        collective_trace=false;                                                                           shift ;;
          --disable-msccl-kernel)     msccl_kernel_enabled=false;                                                                       shift ;;
     -f | --fast)                     build_local_gpu_only=true; collective_trace=false; msccl_kernel_enabled=false;                    shift ;;
