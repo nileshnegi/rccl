@@ -39,12 +39,12 @@ if(ENABLE_MSCCLPP)
     if(NOT mscclpp_FOUND)
         message(STATUS "MSCCLPP not found. Downloading and building MSCCLPP.")
         # Download, build and install mscclpp
-    
+
         download_project(PROJ                mscclpp
                          GIT_REPOSITORY      https://github.com/nileshnegi/mscclpp.git
                          GIT_TAG             feature/rccl_mscclpp
                          INSTALL_DIR         ${MSCCLPP_ROOT}
-                         CMAKE_ARGS          -DBUILD_APPS_NCCL=ON -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+                         CMAKE_ARGS          -DGPU_TARGETS=${AMDGPU_TARGETS} -DBYPASS_GPU_CHECK=ON -DUSE_ROCM=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_APPS_NCCL=ON -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
                          LOG_DOWNLOAD        TRUE
                          LOG_CONFIGURE       TRUE
                          LOG_BUILD           TRUE
@@ -59,6 +59,6 @@ if(ENABLE_MSCCLPP)
         endif()
     endif()
 
-	set(MSCCLPP_INCLUDE_DIRS ${MSCCLPP_ROOT}/include CACHE PATH "")
+    set(MSCCLPP_INCLUDE_DIRS ${MSCCLPP_ROOT}/include CACHE PATH "")
     set(MSCCLPP_LIBRARIES ${MSCCLPP_ROOT}/lib/libmscclpp_static.a;${MSCCLPP_ROOT}/lib/libmscclpp_nccl_static.a CACHE PATH "")
 endif()
