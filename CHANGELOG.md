@@ -14,6 +14,8 @@ Full documentation for RCCL is available at [https://rccl.readthedocs.io](https:
 * Added new GPU target `gfx950`.
 * Added support for `unroll=1` in device-code generation to improve performance
 * Set a default of 112 channels for a single node with `8 * gfx950`
+* Adding ability to choose unroll factor at runtime via `RCCL_UNROLL_FACTOR`.  This can be set to 1, 2 or 4.  This change currently
+  increases compilation and linking time due to triple the number of kernels generated
 * Added MSCCL support for multinode gfx942/gfx950 (i.e., 16 and 32 GPUs). To enable, set the
   environment variable `RCCL_MSCCL_FORCE_ENABLE=1`. Max message size for MSCCL AllGather usage is `12292 * sizeof(datatype) * nGPUs`.
 
