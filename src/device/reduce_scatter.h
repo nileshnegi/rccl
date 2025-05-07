@@ -131,11 +131,25 @@ namespace {
   }
 }
 
+#ifdef __gfx942__ // Use a single slice for a single node on gfx942 (MI300X, MI300A, MI325).  Otherwise, use the default.
+#define rcclReduceScatterRunRingSimpleProtoImpl(tid, nthreads, work) \
+  if(work->oneNode){ \
+    using Proto = ProtoSimple<REDUCESCATTER_CHUNKSTEPS/REDUCESCATTER_SLICESTEPS_SINGLE_NODE, REDUCESCATTER_SLICESTEPS_SINGLE_NODE>; \
+    runRing<T, RedOp, Proto>(tid, nthreads, work); \
+  } else{ \
+    using Proto = ProtoSimple<REDUCESCATTER_CHUNKSTEPS/REDUCESCATTER_SLICESTEPS, REDUCESCATTER_SLICESTEPS>; \
+    runRing<T, RedOp, Proto>(tid, nthreads, work); \
+  }
+#else
+#define rcclReduceScatterRunRingSimpleProtoImpl(tid, nthreads, work) \
+  using Proto = ProtoSimple<REDUCESCATTER_CHUNKSTEPS/REDUCESCATTER_SLICESTEPS, REDUCESCATTER_SLICESTEPS>; \
+  runRing<T, RedOp, Proto>(tid, nthreads, work);
+#endif
+
 template<typename T, typename RedOp>
 struct RunWorkColl<ncclFuncReduceScatter, T, RedOp, NCCL_ALGO_RING, NCCL_PROTO_SIMPLE> {
   __device__ __forceinline__ void run(int tid, int nthreads, struct ncclDevWorkColl* work) {
-    using Proto = ProtoSimple<REDUCESCATTER_CHUNKSTEPS/REDUCESCATTER_SLICESTEPS, REDUCESCATTER_SLICESTEPS>;
-    runRing<T, RedOp, Proto>(tid, nthreads, work);
+    rcclReduceScatterRunRingSimpleProtoImpl(tid, nthreads, work);
   }
 };
 

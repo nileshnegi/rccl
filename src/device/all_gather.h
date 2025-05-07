@@ -175,6 +175,18 @@ namespace {
   }
 }
 
+#ifdef __gfx942__ // Use a single slice for a single node on gfx942 (MI300X, MI300A, MI325).  Otherwise, use the default.
+#define rcclAllGatherRunRingSimpleProtoImpl(tid, nthreads, work) \
+  if(work->oneNode){ \
+    runRing<T, RedOp, ProtoSimple<ALLGATHER_CHUNKSTEPS/ALLGATHER_SLICESTEPS_SINGLE_NODE, ALLGATHER_SLICESTEPS_SINGLE_NODE>, false>(tid, nthreads, work); \
+  } else{ \
+    runRing<T, RedOp, ProtoSimple<ALLGATHER_CHUNKSTEPS/ALLGATHER_SLICESTEPS, ALLGATHER_SLICESTEPS>, false>(tid, nthreads, work); \
+  }
+#else
+#define rcclAllGatherRunRingSimpleProtoImpl(tid, nthreads, work) \
+  runRing<T, RedOp, ProtoSimple<ALLGATHER_CHUNKSTEPS/ALLGATHER_SLICESTEPS, ALLGATHER_SLICESTEPS>, false>(tid, nthreads, work);
+#endif
+
 template<typename T, typename RedOp>
 struct RunWorkColl<ncclFuncAllGather, T, RedOp, NCCL_ALGO_RING, NCCL_PROTO_SIMPLE> {
   __device__ __forceinline__ void run(int tid, int nthreads, struct ncclDevWorkColl* work) {
@@ -185,8 +197,9 @@ struct RunWorkColl<ncclFuncAllGather, T, RedOp, NCCL_ALGO_RING, NCCL_PROTO_SIMPL
 #endif
     if (isNetOffload)
       runRing<T, RedOp, ProtoSimple<1, 1>, true>(tid, nthreads, work);
-    else
-      runRing<T, RedOp, ProtoSimple<ALLGATHER_CHUNKSTEPS/ALLGATHER_SLICESTEPS, ALLGATHER_SLICESTEPS>, false>(tid, nthreads, work);
+    else{
+      rcclAllGatherRunRingSimpleProtoImpl(tid, nthreads, work);
+    }
   }
 };
 
