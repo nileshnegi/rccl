@@ -47,11 +47,7 @@
   } \
 } while (0)
 
-#define barrier_by_group() barrier_by_group_common(__threadfence())
-
-#if defined(__gfx942__) || defined(__gfx950__)
-#define barrier_by_group_block() barrier_by_group_common(__threadfence_block())
-#endif
+#define barrier_by_group_system() barrier_by_group_common(__threadfence_system())
 
 /* Protocol classes: ProtoSimple, ProtoLL, ProtoLL128
  * We use these as template args to the Primtiives class instead of integral

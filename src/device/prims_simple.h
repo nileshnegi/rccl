@@ -79,11 +79,7 @@ private:
     if (nthreads == WARP_SIZE) 
       __syncwarp();
     else 
-      #if defined(__gfx942__) || defined(__gfx950__)
-        barrier_by_group_block();
-      #else
-        barrier_by_group();
-      #endif
+      barrier_by_group_system();
   }
   inline __device__ void subBarrier() {
     barrier();

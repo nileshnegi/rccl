@@ -71,11 +71,7 @@ private:
   inline __device__ void barrier() {
 #if defined(__HIP_PLATFORM_AMD__) || defined(__HIPCC__)
     if (nthreads != WARP_SIZE)
-      #if defined(__gfx942__)
-        barrier_by_group_block();
-      #else
-        barrier_by_group();
-      #endif
+      barrier_by_group_system();
 #else
     if (nthreads == WARP_SIZE) {
       __syncwarp();
