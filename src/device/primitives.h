@@ -49,10 +49,6 @@
 
 #define barrier_by_group() barrier_by_group_common(__threadfence())
 
-#if defined(__gfx942__) || defined(__gfx950__)
-#define barrier_by_group_block() barrier_by_group_common(__threadfence_block())
-#endif
-
 /* Protocol classes: ProtoSimple, ProtoLL, ProtoLL128
  * We use these as template args to the Primtiives class instead of integral
  * enums (e.g. NCCL_PROTO_LL) because for SIMPLE we need to carry a few extra
