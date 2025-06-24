@@ -11,7 +11,7 @@ short_id=$(hostname | cut -d'.' -f1 | cut -d'-' -f3-)
 echo "Node identifier: $short_id"
 
 source /etc/profile.d/lmod.sh
-module load rocm/6.4.0
+module load rocm/6.2.0
 
 # Setup local binary path
 export PATH="$HOME/.local/bin:$PATH"
