@@ -39,7 +39,7 @@ steps:
         done
 
         echo "Checking test result XML for failures..."
-        TEST_XML=$(find "$(Pipeline.Workspace)" -name 'pytorch-test*.xml')
+        TEST_XML=$(find "$(Pipeline.Workspace)" -name 'pytorch_test*.xml')
         if [ -z "$TEST_XML" ]; then
           echo "##vso[task.logissue type=error]No $TEST_XML file found"
           echo "##vso[task.complete result=Failed;]DONE"
@@ -66,4 +66,4 @@ steps:
     inputs:
       searchFolder: $(Pipeline.Workspace)
       testResultsFormat: JUnit
-      testResultsFiles: '**/pytorch-test*.xml'
+      testResultsFiles: '**/pytorch_test*.xml'

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=rccl-test
+#SBATCH --job-name=rccl-UnitTests
 #SBATCH --output=%x-%j.out
 #SBATCH --error=%x-%j.out
 #SBATCH --time=120
