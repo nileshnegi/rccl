@@ -48,6 +48,10 @@ cmake --build .
 cmake --build . --target install
 
 cd "${BINARIES_DIR}"
+mkdir -p pytorch-vllm
+cp /mnt/GT_NFS/new_gt/nilenegi/pytorch-vllm/run_pytorch_vllm.sh "${BINARIES_DIR}"/pytorch-vllm/run_pytorch_vllm.sh
+
+cd "${BINARIES_DIR}"
 mkdir -p pytorch-tests
 cp /mnt/GT_NFS/new_gt/nilenegi/pytorch-tests/run_pytorch_tests.sh "${BINARIES_DIR}"/pytorch-tests/run_pytorch_tests.sh
 

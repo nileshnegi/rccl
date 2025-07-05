@@ -2,7 +2,7 @@
 #SBATCH --job-name=pytorch-tests
 #SBATCH --output=%x-%j.out
 #SBATCH --error=%x-%j.out
-#SBATCH --time=200
+#SBATCH --time=300
 #SBATCH --nodes=1
 #SBATCH --exclusive
 #SBATCH --partition=gt
@@ -14,4 +14,4 @@ source /etc/profile.d/lmod.sh
 module load rocm/6.2.0
 cd "$SLURM_SUBMIT_DIR"
 
-docker run --rm --privileged --ipc=host --network=host --device=/dev/kfd --device=/dev/dri --group-add video --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --security-opt apparmor=unconfined --pull always -v ${BINARIES_DIR}:/host rocm/pytorch:latest bash -c "ls /host && ls /host/lib && ls /host/pytorch-tests && /host/pytorch-tests/run_pytorch_tests.sh"
+docker run --rm --privileged --ipc=host --network=host --device=/dev/kfd --device=/dev/dri --group-add video --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --security-opt apparmor=unconfined --pull always -v ${BINARIES_DIR}:/host rocm/pytorch:latest bash -c "/host/pytorch-tests/run_pytorch_tests.sh"
