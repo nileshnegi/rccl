@@ -2,7 +2,7 @@
 #SBATCH --job-name=rccl-tests
 #SBATCH --output=%x-%j.out
 #SBATCH --error=%x-%j.out
-#SBATCH --time=120
+#SBATCH --time=$TESTS_TIMEOUT
 #SBATCH --nodes=1
 #SBATCH --exclusive
 #SBATCH --partition=gt
@@ -12,6 +12,24 @@ echo "Node identifier: $short_id"
 
 source /etc/profile.d/lmod.sh
 module load rocm/6.2.0
+
+if [ "$ENABLE_COVERAGE" = "true" ]; then
+    cd $(Pipeline.Workspace)/s/rccl-test-infra || exit
+    CODE_COV=1 ./run.sh -c config/"$INFRA_TEST_CONFIG".json -B -C -O --use-slurm --slurm-time="$TESTS_TIMEOUT" --slurm-partition=gt --slurm-nodes="$NUM_NODES" --work_dir="$BINARIES_DIR"
+    cd slurm_runs_"$INFRA_TEST_CONFIG_"* || exit
+
+    FILE="rawprofiles.list"
+
+    echo "Waiting for ${FILE}"
+    while [ ! -e "${FILE}" ]; do
+      sleep 1
+    done
+    echo "File ${FILE} found, now building coverage report"
+    /opt/rocm/lib/llvm/bin/llvm-profdata merge --sparse --input-files=$FILE --output=merged.profdata
+    /opt/rocm/lib/llvm/bin/llvm-cov show --instr-profile="merged.profdata" --format=html --output-dir=report --project-title=RCCL_Lib_Coverage_Report --ignore-filename-regex="ext-src\/*" "${BINARIES_DIR}"/rccl/build/release/librccl.so
+    exit 0
+fi
+
 cd "$BINARIES_DIR/bin"
 
 export PATH="$BINARIES_DIR/bin:$PATH"
