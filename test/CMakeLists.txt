@@ -56,8 +56,11 @@ if(BUILD_TESTS)
     common/TestBed.cpp
     common/TestBedChild.cpp
     common/StandaloneUtils.cpp
-    proxy_trace/ProxyTraceUnitTests.cpp
-    )
+  )
+
+  if(PROXY_TRACE_ENABLE)
+    list(APPEND TEST_SOURCE_FILES proxy_trace/ProxyTraceUnitTests.cpp)
+  endif()
 
   # Append file if build type is not Debug.
   # Visibility is hidden by default, so we need to explicitly add the following file(s)
@@ -65,8 +68,11 @@ if(BUILD_TESTS)
   if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
     list(APPEND TEST_SOURCE_FILES
       ../src/misc/recorder.cc
-      ../src/misc/proxy_trace/proxy_trace.cc
     )
+
+    if(PROXY_TRACE_ENABLE)
+      list(APPEND TEST_SOURCE_FILES ../src/misc/proxy_trace/proxy_trace.cc)
+    endif()
   endif()
 
   # Add rccl-UnitTests binary

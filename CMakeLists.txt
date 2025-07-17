@@ -25,13 +25,14 @@ option(BUILD_SHARED_LIBS                       "Build as shared library"        
 option(BUILD_TESTS                             "Build unit test programs"                      OFF)
 option(COLLTRACE                               "Collective Trace Option"                       ON)
 option(ENABLE_CODE_COVERAGE                    "Enable code coverage"                          OFF)
+option(ENABLE_IFC                              "Enable indirect function call"                 OFF)
 option(ENABLE_MSCCL_KERNEL                     "Enable MSCCL while compiling"                  ON)
 option(ENABLE_MSCCLPP                          "Enable MSCCL++"                                ON)
 option(ENABLE_MSCCLPP_CLIP                     "Enable MSCCL++ CLIP"                           OFF)
 option(ENABLE_MSCCLPP_EXECUTOR                 "Enable MSCCL++ Executor"                       OFF)
 option(ENABLE_MSCCLPP_FORMAT_CHECKS            "Enable formatting checks in MSCCL++"           OFF)
 option(ENABLE_NPKIT                            "Enable NPKit"                                  OFF)
-option(ENABLE_IFC                              "Enable indirect function call"                 OFF)
+option(ENABLE_PROXY_TRACE                      "Enable Proxy Trace"                            ON)
 option(INSTALL_DEPENDENCIES                    "Force install dependencies"                    OFF)
 option(ROCTX                                   "Enable ROCTX"                                  ON)
 option(PROFILE                                 "Enable profiling"                              OFF)
@@ -566,7 +567,6 @@ set(SRC_FILES
   src/include/nvtx3/nvtxDetail/nvtxInitDefs.h
   src/include/nvtx3/nvtxDetail/nvtxLinkOnce.h
   src/include/nvtx3/nvtxDetail/nvtxTypes.h
-  src/include/proxy_trace/proxy_trace.h
   src/include/plugin/nccl_net.h
   src/include/plugin/nccl_profiler.h
   src/include/plugin/nccl_tuner.h
@@ -613,7 +613,6 @@ set(SRC_FILES
   src/misc/msccl/msccl_parser.cc
   src/misc/msccl/msccl_setup.cc
   src/misc/msccl/msccl_status.cc
-  src/misc/proxy_trace/proxy_trace.cc
   src/plugin/net.cc
   src/plugin/plugin_open.cc
   src/plugin/profiler.cc
@@ -650,7 +649,7 @@ set(SRC_FILES
   src/transport/shm.cc
 )
 
-if (ENABLE_MSCCL_KERNEL)
+if(ENABLE_MSCCL_KERNEL)
   set(MSCCL_KERNEL_SOURCES
     src/device/msccl_kernel_impl.h
     src/include/msccl/msccl_kernel.h
@@ -658,12 +657,21 @@ if (ENABLE_MSCCL_KERNEL)
   list(APPEND SRC_FILES ${MSCCL_KERNEL_SOURCES})
 endif()
 
-if (ENABLE_MSCCLPP)
+if(ENABLE_MSCCLPP)
   set(MSCCLPP_SOURCES
     src/include/mscclpp/mscclpp_nccl.h
     src/misc/mscclpp/mscclpp_nccl.cc
   )
   list(APPEND SRC_FILES ${MSCCLPP_SOURCES})
+endif()
+
+if(ENABLE_PROXY_TRACE)
+  set(PROXY_TRACE_ENABLE ON)
+  set(PROXY_TRACE_SOURCES
+    src/include/proxy_trace/proxy_trace.h
+    src/misc/proxy_trace/proxy_trace.cc
+  )
+  list(APPEND SRC_FILES ${PROXY_TRACE_SOURCES})
 endif()
 
 # Hipify source files (copy of source generated into hipify directory)
@@ -1147,7 +1155,9 @@ target_link_libraries(rccl INTERFACE hip::host)
 target_link_libraries(rccl PRIVATE   hip::device)
 target_link_libraries(rccl PRIVATE   dl)
 target_link_libraries(rccl PRIVATE   ${ROCM_SMI_LIBRARIES})
-target_link_libraries(rccl PRIVATE fmt::fmt-header-only)
+if(PROXY_TRACE_ENABLE)
+  target_link_libraries(rccl PRIVATE fmt::fmt-header-only)
+endif()
 if(ENABLE_MSCCLPP)
   target_link_libraries(rccl PRIVATE mscclpp_nccl)
 endif()

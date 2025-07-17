@@ -18,7 +18,9 @@
 #include "shmutils.h"
 #include "p2p.h"
 #include "collectives.h"
+#ifdef PROXY_TRACE_ENABLE
 #include "proxy_trace/proxy_trace.h"
+#endif
 
 typedef enum : uint8_t {
   ncclPatternRing,
@@ -111,11 +113,13 @@ struct ncclProxyOp {
 
   struct ncclProxyOp *enqNext;
 
+#ifdef PROXY_TRACE_ENABLE
   // Used to track total real bytes of this op
   uint32_t totalBytes;
   // Used to fetch/update the proxyOp in ProxyTrace map
   facebook_rccl::ProxyTraceRecordKey traceKey;
   facebook_rccl::ProxyTraceExtraInfo traceInfo;
+#endif
 };
 
 struct ncclProxySubArgs {
@@ -168,9 +172,11 @@ struct ncclProxySubArgs {
   uint64_t timestamp[NCCL_STEPS];
 #endif
 
+#ifdef PROXY_TRACE_ENABLE
   // Used to fetch/update the proxyOp in ProxyTrace map
   facebook_rccl::ProxyTraceRecordKey traceKey;
   facebook_rccl::ProxyTraceExtraInfo traceInfo;
+#endif
 };
 
 struct ncclProxyArgs {
@@ -364,8 +370,10 @@ struct ncclProxyState {
   // Queue of expected responses from the proxy
   struct ncclExpectedProxyResponse* expectedResponses;
 
+#ifdef PROXY_TRACE_ENABLE
   // A handle to the proxy traces
   std::unique_ptr<facebook_rccl::ProxyTrace> proxyTrace;
+#endif
 };
 
 enum proxyConnectState {

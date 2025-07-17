@@ -139,16 +139,20 @@ static inline int ncclFuncTrafficPerByte(ncclFunc_t func, int nRanks) {
   }
 }
 
-RCCL_PARAM_DECLARE(EnableProxyTrace);
+#ifdef PROXY_TRACE_ENABLE
+RCCL_PARAM(EnableProxyTrace, "ENABLE_PROXY_TRACE", 0);
+#endif
 /*****************************************************************************/
 /*       Launch system : synchronization and CUDA kernel launch              */
 /*****************************************************************************/
 static ncclResult_t addProxyOpIfNeeded(struct ncclComm* comm, struct ncclKernelPlan* plan, struct ncclProxyOp* op) {
   bool needed = true;
+#ifdef PROXY_TRACE_ENABLE
   if (rcclParamEnableProxyTrace()) {
     op->traceKey.commHash = comm->commHash;
     op->traceKey.opCount = comm->opCount;
   }
+#endif
   NCCLCHECK(ncclProxySaveOp(comm, op, &needed));
   if (needed) {
     struct ncclProxyOp* q = ncclMemoryPoolAlloc<struct ncclProxyOp>(&comm->memPool_ncclProxyOp, &comm->memPermanent);
@@ -1035,9 +1039,11 @@ static ncclResult_t addP2pToPlan(
     op->rank = comm->rank;
     op->eActivationMask = p2pTasks[dir] ? p2pTasks[dir]->eActivationMask : 0;
     op->connIndex = connIndex[dir];
+#ifdef PROXY_TRACE_ENABLE
     if (rcclParamEnableProxyTrace()) {
       op->coll =  dir ? ncclFuncSend : ncclFuncRecv;
     }
+#endif
     // The following are modified per channel part in addWorkToChannels():
     // op->buffer, op->nbytes, op->nsteps = ...;
   }
@@ -1060,9 +1066,11 @@ static ncclResult_t addP2pToPlan(
       int nParts = dir ? work->nSendChannels : work->nRecvChannels;
       void* addr = dir ? work->sendAddr : work->recvAddr;
       size_t bytes = dir ? work->sendBytes : work->recvBytes;
+#ifdef PROXY_TRACE_ENABLE
       if (rcclParamEnableProxyTrace()) {
         proxyOps[dir].totalBytes = bytes;
       }
+#endif
       proxyOps[dir].recvbuff = nullptr;
       if (nParts <= part) {
         proxyOps[dir].nsteps = 0;
