@@ -15,11 +15,7 @@
 
 namespace {
   template<typename T, typename RedOp, typename Proto, int RCCLMetadata>
-#if defined(USE_INDIRECT_FUNCTION_CALL) && !defined(__gfx942__) && !defined(__gfx950__)
   __device__ void runRing(int tid, int nthreads, struct ncclDevWorkColl* work) {
-#else
-  __device__ __attribute__((noinline)) void runRing(int tid, int nthreads, struct ncclDevWorkColl* work) {
-#endif
     ncclRing *ring = &ncclShmem.channel.ring;
     int ringIx = ring->index;
     const int nranks = ncclShmem.comm.nRanks;
@@ -211,11 +207,7 @@ namespace {
   }
 
   template<typename T, typename RedOp, typename Proto>
-#if defined(USE_INDIRECT_FUNCTION_CALL) && !defined(__gfx942__) && !defined(__gfx950__)
   __device__ void runTreeUpDown(int tid, int nthreads, struct ncclDevWorkColl* work) {
-#else
-  __device__ __attribute__((noinline)) void runTreeUpDown(int tid, int nthreads, struct ncclDevWorkColl* work) {
-#endif
 #if defined(ENABLE_NPKIT)
     const int bid = ncclShmem.channelId - work->channelLo;
     int npKitCtxIdx = bid; // unused variable - compiler warning
@@ -359,11 +351,7 @@ namespace {
   }
 
   template<typename T, typename RedOp, typename Proto>
-#if defined(USE_INDIRECT_FUNCTION_CALL) && !defined(__gfx942__) && !defined(__gfx950__)
   __device__ void runTreeSplit(int tid, int nthreads, struct ncclDevWorkColl* work) {
-#else
-  __device__ __attribute__((noinline)) void runTreeSplit(int tid, int nthreads, struct ncclDevWorkColl* work) {
-#endif
 #if defined(ENABLE_NPKIT)
     const int bid = ncclShmem.channelId - work->channelLo; // unused variable - compiler warning
 #endif

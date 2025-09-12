@@ -336,8 +336,7 @@ with open(os.path.join(gensrc, "device_table.h"), "w") as f:
   print("-- Generating %s" % os.path.join(gensrc, "device_table.h"))
   out = f.write
 
-  if is_ifc: func_declaration = "__device__ void"
-  else: func_declaration = "__device__ __attribute__((noinline)) void"
+  func_declaration = "__device__ void"
 
   for fn in primary_funcs:
     sym = paste("_", "ncclDevFunc", *fn)
